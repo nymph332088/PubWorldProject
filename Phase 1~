@@ -1,0 +1,118 @@
+################################################
+# @Author: Shanshan Zhang
+# @Date: 09/16/2014
+# @Class: Principle of Data Management
+# @Title: MySQL script for Phase 1.
+################################################
+
+CREATE DATABASE PubWorld;
+USE PubWorld;
+SHOW TABLES;
+
+-- Conference table
+--
+CREATE TABLE IF NOT EXISTS Conference
+(
+ConfName VARCHAR(255) NOT NULL,
+Year YEAR(4) NOT NULL,
+
+PRIMARY KEY (ConfName, Year)
+) ENGINE=INNODB;
+
+
+-- Create table for unique papers from all three years. 
+--
+CREATE TABLE IF NOT EXISTS Papers
+(
+PaperID INT NOT NULL,
+
+Title VARCHAR(255) NOT NULL,
+PaperNo VARCHAR(255) NOT NULL,
+Track VARCHAR(255),
+Topic VARCHAR(255),
+Type VARCHAR(255),
+
+PRIMARY KEY (PaperID)
+) ENGINE=INNODB;
+
+-- Create table for unique authors from all three years.
+-- 
+CREATE TABLE IF NOT EXISTS Authors
+(
+AuthorID INT NOT NULL,
+FirstName VARCHAR(255),
+LastName VARCHAR(255),
+Affiliation VARCHAR(255),
+
+PRIMARY KEY (AuthorID)
+
+) ENGINE=INNODB;
+
+-- Create PCMembers table for all unique PCMembers from three years
+--
+CREATE TABLE IF NOT EXISTS PCMembers
+(
+PCMemberID INT NOT NULL,
+FirstName VARCHAR(255),
+LastName VARCHAR(255),
+Affiliation VARCHAR(255),
+
+PRIMARY KEY(PCMemberID)
+) ENGINE=INNODB; 
+
+
+-- Create Paper-Author table for all papers from three years.
+--
+CREATE TABLE IF NOT EXISTS Paper_Author
+(
+ID INT NOT NULL AUTO_INCREMENT,
+PaperID INT NOT NULL,
+AuthorID INT NOT NULL,
+ConfName VARCHAR(255) NOT NULL,
+Year YEAR(4) NOT NULL,
+PRIMARY KEY (ID),
+
+INDEX (PaperID),
+INDEX (AuthorID),
+INDEX (ConfName, Year),
+
+FOREIGN KEY (PaperID)
+	REFERENCES Papers (PaperID)
+	ON UPDATE CASCADE ON DELETE RESTRICT,
+
+FOREIGN KEY (AuthorID)
+	REFERENCE Authors (AuthorID)
+	ON UPDATE CASCADE ON DELETE RESTRICT,
+
+FOREIGN KEY (ConfName, Year)
+	REFERENCE Conference (ConfName, Year)
+	ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=INNODB;
+
+
+-- Create PC_Conf table for PC Conf pairs
+--
+CREATE TABLE IF NOT EXISTS PC_Conf
+(
+ID INT NOT NULL AUTO_INCREMENT,
+PCMemberID INT NOT NULL,
+ConfName VARCHAR(255) NOT NULL,
+Year YEAR(4) NOT NULL,
+Track VARCHAR(255),
+Title VARCHAR(255),
+PRIMARY KEY(ID),
+
+INDEX (PCMemberID),
+INDEX (ConfName, Year),
+
+FOREIGN KEY(PCMemberID)
+	REFERENCE PCMembers(PCMemberID)
+	ON UPDATE CASCADE ON DELETE RESTRICT,
+
+FOREIGN KEY(ConfName, Year)
+	REFERENCE Conference(ConfName, Year)
+	ON UPDATE CASCADE ON DELETE RESTRICT
+
+) ENGINE=INNODB;
+
+
